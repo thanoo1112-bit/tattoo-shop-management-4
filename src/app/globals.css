@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background-dark: #0A0A0A;
+  --color-surface-dark: #141414;
+  --color-card-glass: rgba(20, 20, 20, 0.95);
+  --color-border-dark: #2A2A2A;
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #999999;
+  --color-accent-silver: #D4D4D8;
+  --color-status-approved: #10B981;
+  --color-status-pending: #EF4444;
+  
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-gothic: var(--font-gothic), serif;
+}
+
+:root {
+  --background: #0A0A0A;
+  --foreground: #F5F5F5;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Raw Underground Studio Texture */
+.bg-noise {
+  position: relative;
+}
+.bg-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.raw-panel {
+  background-color: var(--color-card-glass);
+  border: 1px solid var(--color-border-dark);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.raw-panel:hover {
+  border-color: #404040;
+}
+
+.input-raw {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border-dark);
+  transition: all 0.2s ease;
+}
+.input-raw:focus {
+  border-color: var(--color-text-primary);
+  box-shadow: 0 0 0 1px var(--color-text-primary);
+}
+
+/* Background Images */
+.bg-ink-smoke {
+  background-image: url('/images/bg-ink.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.bg-flash-wall {
+  background-image: url('/images/bg-flash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
