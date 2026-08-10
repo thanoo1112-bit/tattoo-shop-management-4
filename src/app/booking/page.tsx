@@ -126,10 +126,9 @@ export default function BookingPage() {
                 วันที่สะดวก (Preferred Date - Optional)
               </label>
               <div className="relative">
-                <CalendarIcon className="absolute left-4 top-3 text-text-secondary" size={20} />
                 <input 
                   type="date"
-                  className="w-full input-raw rounded-sm pl-12 pr-4 py-3 text-sm md:text-base text-text-primary focus:outline-none [color-scheme:dark]"
+                  className="w-full input-raw rounded-sm px-4 py-3 text-sm md:text-base text-text-primary focus:outline-none [color-scheme:dark]"
                 />
               </div>
             </div>

@@ -43,24 +43,29 @@ body {
 }
 
 .raw-panel {
-  background-color: var(--color-card-glass);
-  border: 1px solid var(--color-border-dark);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-}
-
-.raw-panel:hover {
-  border-color: #404040;
+  @apply bg-background-dark/80 backdrop-blur-md border border-border-dark shadow-[0_0_15px_rgba(0,0,0,0.5)];
 }
 
 .input-raw {
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--color-border-dark);
-  transition: all 0.2s ease;
+  @apply bg-background-dark/50 border border-border-dark text-text-primary px-4 py-3 focus:outline-none focus:border-accent-silver/50 transition-colors placeholder:text-text-secondary/50;
 }
-.input-raw:focus {
-  border-color: var(--color-text-primary);
-  box-shadow: 0 0 0 1px var(--color-text-primary);
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
 }
 
 /* Background Images */
