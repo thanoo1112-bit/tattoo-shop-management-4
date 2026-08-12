@@ -22,9 +22,11 @@ export default function Home() {
           </h1>
         </Link>
         
-        {/* Desktop Nav (Removed anchor links as requested) */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex gap-6 text-sm font-medium text-text-secondary">
-          {/* Links removed */}
+          <Link href="#portfolio" className="hover:text-accent-silver transition-colors">ผลงาน (Portfolio)</Link>
+          <Link href="#artists" className="hover:text-accent-silver transition-colors">ช่างสัก (Artists)</Link>
+          <Link href="#aftercare" className="hover:text-accent-silver transition-colors">ดูแลรอยสัก (Aftercare)</Link>
         </nav>
         
         <div className="hidden md:flex gap-4">
@@ -69,6 +71,15 @@ export default function Home() {
             157 TATTOO
           </h2>
           
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[10px] sm:text-xs text-accent-silver uppercase tracking-[0.2em] font-medium opacity-90 mb-8 md:mb-10 max-w-2xl">
+            {["Chicano", "Blackwork", "Darkwork", "Demon", "Alien", "Font", "Thai", "Japan"].map((style, index, arr) => (
+              <span key={style} className="whitespace-nowrap flex items-center gap-4">
+                <span>{style}</span>
+                {index < arr.length - 1 && <span className="opacity-50">•</span>}
+              </span>
+            ))}
+          </div>
+          
           <p className="text-sm md:text-base lg:text-lg text-text-secondary font-light max-w-2xl mx-auto leading-loose drop-shadow-md px-4 mb-10 md:mb-12">
             ศูนย์รวมงานสักหลากหลายสไตล์ รังสรรค์ผลงานศิลปะบนเรือนร่างระดับพรีเมียม <br className="hidden md:block"/> ในบรรยากาศสตูดิโอแบบ Exclusive
           </p>
@@ -87,21 +98,7 @@ export default function Home() {
       {/* Portfolio Section Placeholder */}
       <section id="portfolio" className="py-16 md:py-24 px-4 md:px-12 bg-transparent relative z-10 border-b border-border-dark">
         <div className="max-w-7xl mx-auto">
-          {/* Portfolio Filter Bar */}
-          <div className="flex flex-wrap gap-2 md:gap-3 mb-8 md:mb-12 justify-center items-center">
-            {["ทั้งหมด", "Chicano", "Blackwork", "Darkwork", "Demon", "Alien", "Font", "Japan"].map((style, index) => (
-              <button 
-                key={style} 
-                className={`px-4 py-2 rounded-full text-[10px] sm:text-xs md:text-sm uppercase transition-all flex items-center justify-center ${
-                  index === 0 
-                    ? "bg-white text-black font-bold shadow-[0_0_10px_rgba(255,255,255,0.3)]" 
-                    : "border border-border-dark text-text-secondary hover:text-white hover:border-white/50 bg-background-dark/50 backdrop-blur-sm font-medium"
-                }`}
-              >
-                {style}
-              </button>
-            ))}
-          </div>
+          <h3 className="text-3xl md:text-4xl font-gothic mb-8 md:mb-12 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">ผลงาน (Portfolio)</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="aspect-square relative group overflow-hidden border border-border-dark rounded-md raw-panel bg-background-dark/80 backdrop-blur-sm">
@@ -113,6 +110,30 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Artists Section Placeholder */}
+      <section id="artists" className="py-16 md:py-24 px-4 md:px-12 bg-background-dark relative z-10 border-b border-border-dark">
+        <div className="max-w-7xl mx-auto text-center">
+          <h3 className="text-3xl md:text-4xl font-gothic mb-4 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">ช่างสัก (Artists)</h3>
+          <p className="text-text-secondary mb-12">ทีมช่างสักฝีมือระดับพรีเมียมของเรา</p>
+          <div className="raw-panel p-12 text-center text-text-secondary border-dashed max-w-3xl mx-auto">
+            <p className="font-gothic text-xl tracking-widest uppercase">Coming Soon</p>
+            <p className="text-sm mt-2">ส่วนนี้กำลังอยู่ระหว่างการพัฒนา</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Aftercare Section Placeholder */}
+      <section id="aftercare" className="py-16 md:py-24 px-4 md:px-12 bg-transparent relative z-10">
+        <div className="max-w-7xl mx-auto text-center">
+          <h3 className="text-3xl md:text-4xl font-gothic mb-4 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">ดูแลรอยสัก (Aftercare)</h3>
+          <p className="text-text-secondary mb-12">คู่มือการดูแลรอยสักเพื่อให้สีสวยคมชัดและแผลหายไว</p>
+          <div className="raw-panel p-12 text-center text-text-secondary border-dashed max-w-3xl mx-auto">
+            <p className="font-gothic text-xl tracking-widest uppercase">Coming Soon</p>
+            <p className="text-sm mt-2">ส่วนนี้กำลังอยู่ระหว่างการพัฒนา</p>
           </div>
         </div>
       </section>
@@ -135,6 +156,9 @@ export default function Home() {
             <X size={28} />
           </button>
 
+          <Link href="#portfolio" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ผลงาน (Portfolio)</Link>
+          <Link href="#artists" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ช่างสัก (Artists)</Link>
+          <Link href="#aftercare" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ดูแลรอยสัก (Aftercare)</Link>
           <div className="flex flex-col gap-4 mt-6 items-center w-full max-w-xs">
             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-text-secondary hover:text-accent-silver flex items-center gap-2">
               <User size={18} /> ล็อกอิน

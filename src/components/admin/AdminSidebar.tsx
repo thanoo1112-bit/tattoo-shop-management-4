@@ -86,13 +86,15 @@ export default function AdminSidebar() {
         </nav>
 
         <div className="p-4 border-t border-border-dark">
-          <Link 
-            href="/"
-            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-text-secondary hover:bg-white/5 hover:text-white transition-all uppercase tracking-wider w-full"
-          >
-            <LogOut size={18} className="opacity-70" />
-            ออกจากระบบ (LOGOUT)
-          </Link>
+          <form action="/auth/signout" method="post">
+            <button 
+              type="submit"
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-text-secondary hover:bg-white/5 hover:text-white transition-all uppercase tracking-wider w-full text-left"
+            >
+              <LogOut size={18} className="opacity-70" />
+              ออกจากระบบ (LOGOUT)
+            </button>
+          </form>
         </div>
       </aside>
     </>
