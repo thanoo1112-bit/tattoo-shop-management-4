@@ -15,14 +15,18 @@ import {
 } from "lucide-react";
 
 const NAV_LINKS = [
-  { name: "ภาพรวม (Overview)", href: "/admin", icon: LayoutDashboard },
+  { name: "ภาพรวม (Overview)", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "คิวงานสัก (Appointments)", href: "/admin/appointments", icon: Calendar },
   { name: "รายชื่อลูกค้า (Clients)", href: "/admin/clients", icon: Users },
-  { name: "จัดการผลงาน (Portfolio)", href: "/admin/portfolio", icon: ImageIcon },
+  { name: "จัดการช่างสัก (Artists)", href: "/admin/artists", icon: Users },
+  { name: "จัดการผลงาน (All Portfolios)", href: "/admin/portfolio", icon: ImageIcon },
+  { name: "อัปโหลดผลงานตัวเอง (My Portfolio)", href: "/artist/portfolio", icon: ImageIcon },
+  { name: "ตารางงาน (Calendar)", href: "/admin/calendar", icon: Calendar },
+  { name: "รายงาน (Reports)", href: "/admin/reports", icon: LayoutDashboard },
   { name: "ตั้งค่า (Settings)", href: "/admin/settings", icon: Settings },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ role = "artist" }: { role?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -30,7 +34,7 @@ export default function AdminSidebar() {
     <>
       {/* Mobile Top Bar */}
       <div className="md:hidden flex items-center justify-between p-4 bg-background-dark/95 border-b border-border-dark sticky top-0 z-40 backdrop-blur-md">
-        <Link href="/admin" className="flex items-center gap-3">
+        <Link href="/admin/dashboard" className="flex items-center gap-3">
           <img src="/images/logo.png" alt="157 Logo" className="h-8 w-auto mix-blend-screen" />
           <span className="font-gothic text-xl tracking-widest">DASHBOARD</span>
         </Link>
@@ -54,10 +58,10 @@ export default function AdminSidebar() {
         }`}
       >
         <div className="p-6 border-b border-border-dark flex items-center justify-between hidden md:flex">
-          <Link href="/admin" className="flex flex-col items-center gap-3 w-full">
+          <Link href="/admin/dashboard" className="flex flex-col items-center gap-3 w-full">
             <img src="/images/logo.png" alt="157 Logo" className="h-16 w-auto mix-blend-screen opacity-90" />
             <h1 className="text-xl font-gothic tracking-widest text-center mt-2 border-t border-border-dark pt-4 w-full">
-              ARTIST PANEL
+              {role === 'admin' ? 'ADMIN PANEL' : 'ARTIST PANEL'}
             </h1>
           </Link>
         </div>

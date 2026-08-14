@@ -35,8 +35,8 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect /admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  // Protect /admin and /artist routes
+  if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/artist')) {
     if (!user) {
       // no user, redirect to login
       const url = request.nextUrl.clone()

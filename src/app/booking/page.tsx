@@ -246,7 +246,7 @@ export default function BookingPage() {
                   <Wallet className="mx-auto text-text-secondary" size={32} />
                   <div>
                     <p className="text-sm font-bold uppercase tracking-widest">โอนเงินเข้าบัญชี: {selectedArtist.name}</p>
-                    <p className="text-xs text-text-secondary mt-1">มัดจำ 1,000 บาท เพื่อล็อกคิว (1,000 THB Deposit)</p>
+                    <p className="text-xs text-text-secondary mt-1">มัดจำ 500 บาท เพื่อล็อกคิว (500 THB Deposit)</p>
                   </div>
                   
                   {selectedArtist.qr_code_url ? (

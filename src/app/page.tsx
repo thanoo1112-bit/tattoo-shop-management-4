@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar, User, Menu, X } from "lucide-react";
+import PublicPortfolio from "@/components/public/PublicPortfolio";
+import PublicArtists from "@/components/public/PublicArtists";
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -81,7 +83,7 @@ export default function Home() {
           </div>
           
           <p className="text-sm md:text-base lg:text-lg text-text-secondary font-light max-w-2xl mx-auto leading-loose drop-shadow-md px-4 mb-10 md:mb-12">
-            ศูนย์รวมงานสักหลากหลายสไตล์ รังสรรค์ผลงานศิลปะบนเรือนร่างระดับพรีเมียม <br className="hidden md:block"/> ในบรรยากาศสตูดิโอแบบ Exclusive
+            เปลี่ยนจินตนาการให้เป็นศิลปะบนเรือนร่าง ถ่ายทอดตัวตนของคุณผ่านลายสักแบบ Custom Design <br className="hidden md:block"/> ในพื้นที่ Private Studio ของเรา
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 w-full max-w-md mx-auto sm:max-w-none px-4">
@@ -95,36 +97,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Portfolio Section Placeholder */}
-      <section id="portfolio" className="py-16 md:py-24 px-4 md:px-12 bg-transparent relative z-10 border-b border-border-dark">
-        <div className="max-w-7xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-gothic mb-8 md:mb-12 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">ผลงาน (Portfolio)</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="aspect-square relative group overflow-hidden border border-border-dark rounded-md raw-panel bg-background-dark/80 backdrop-blur-sm">
-                <div className="absolute inset-0 flex items-center justify-center text-text-secondary">
-                  <span className="opacity-50 text-sm tracking-widest font-gothic">Artwork {i}</span>
-                </div>
-                <div className="absolute inset-0 bg-background-dark opacity-0 group-hover:opacity-60 transition-opacity duration-300 flex items-center justify-center">
-                  <span className="font-gothic text-xl md:text-2xl text-text-primary tracking-widest translate-y-4 group-hover:translate-y-0 transition-transform duration-300">VIEW</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Dynamic Portfolio & Flash Wall Section */}
+      <PublicPortfolio />
 
-      {/* Artists Section Placeholder */}
-      <section id="artists" className="py-16 md:py-24 px-4 md:px-12 bg-background-dark relative z-10 border-b border-border-dark">
-        <div className="max-w-7xl mx-auto text-center">
-          <h3 className="text-3xl md:text-4xl font-gothic mb-4 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">ช่างสัก (Artists)</h3>
-          <p className="text-text-secondary mb-12">ทีมช่างสักฝีมือระดับพรีเมียมของเรา</p>
-          <div className="raw-panel p-12 text-center text-text-secondary border-dashed max-w-3xl mx-auto">
-            <p className="font-gothic text-xl tracking-widest uppercase">Coming Soon</p>
-            <p className="text-sm mt-2">ส่วนนี้กำลังอยู่ระหว่างการพัฒนา</p>
-          </div>
-        </div>
-      </section>
+      {/* Dynamic Artists Section */}
+      <PublicArtists />
 
       {/* Aftercare Section Placeholder */}
       <section id="aftercare" className="py-16 md:py-24 px-4 md:px-12 bg-transparent relative z-10">

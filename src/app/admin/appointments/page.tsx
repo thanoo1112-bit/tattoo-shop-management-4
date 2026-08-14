@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import AppointmentRow from "../AppointmentRow";
+import AppointmentRow from "@/app/admin/AppointmentRow";
 import { Calendar } from "lucide-react";
 
 export const revalidate = 0;
@@ -11,38 +11,14 @@ export default async function AppointmentsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Fetch user profile
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  const role = profile?.role || "artist";
-
-  // Fetch artist link if role is artist
-  let artistId = null;
-  if (role === "artist") {
-    const { data: artistRecord } = await supabase
-      .from("artists")
-      .select("id")
-      .eq("profile_id", user.id)
-      .single();
-    if (artistRecord) artistId = artistRecord.id;
-  }
+  // Since layout protects this route, we know user is an admin.
 
   // Fetch Appointments
-  let appointmentsQuery = supabase
+  const { data: appointments } = await supabase
     .from("appointments")
     .select("*, artists(name)")
     .order("preferred_date", { ascending: true }) // Order by date for the calendar view
     .order("created_at", { ascending: false });
-
-  if (role === "artist" && artistId) {
-    appointmentsQuery = appointmentsQuery.eq("artist_id", artistId);
-  }
-
-  const { data: appointments } = await appointmentsQuery;
 
   // Group appointments by date
   const upcomingApps = appointments?.filter(a => a.preferred_date && new Date(a.preferred_date) >= new Date()) || [];

@@ -1,20 +1,57 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | 157 TATTOO",
   description: "Artist management dashboard for 157 TATTOO.",
 };
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    redirect("/login");
+  }
+
+  let role = null;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role) {
+    role = profile.role;
+  }
+
+  if (role === "artist") {
+    redirect("/artist/dashboard");
+  } else if (role !== "admin") {
+    // If not admin and not artist, it's an invalid role
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background-dark p-4">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold text-red-400">Unauthorized Role</h1>
+          <p className="text-text-secondary">บัญชีของคุณไม่มีสิทธิ์เข้าถึงหน้านี้ (Role: {role || 'ไม่มี'})</p>
+          <form action="/login">
+             <button className="px-4 py-2 bg-white text-black font-bold mt-4">กลับไปหน้าล็อกอิน</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-background-dark text-text-primary">
       {/* Sidebar Component handles both desktop sidebar and mobile drawer */}
-      <AdminSidebar />
+      <AdminSidebar role={role} />
       
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
