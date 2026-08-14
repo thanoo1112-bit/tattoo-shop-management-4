@@ -33,7 +33,7 @@ export default function PublicPortfolio() {
         .order("created_at", { ascending: false });
 
       if (data) {
-        setItems(data as PortfolioItem[]);
+        setItems(data as unknown as PortfolioItem[]);
       }
       setIsLoading(false);
     };
