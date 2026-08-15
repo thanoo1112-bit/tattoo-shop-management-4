@@ -31,7 +31,9 @@ export default async function ArtistLayout({
     role = profile.role;
   }
 
-  if (role !== "artist" && role !== "admin") {
+  if (role === "admin") {
+    redirect("/admin/dashboard");
+  } else if (role !== "artist") {
     // If not admin and not artist, it's an invalid role
     return (
       <div className="min-h-screen flex items-center justify-center bg-background-dark p-4">

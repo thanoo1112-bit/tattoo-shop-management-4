@@ -21,7 +21,6 @@ type PortfolioItem = {
 export default function PortfolioManager({ artistId }: { artistId: string }) {
   const supabase = createClient();
   const [items, setItems] = useState<PortfolioItem[]>([]);
-  const [activeTab, setActiveTab] = useState<'all' | 'portfolio' | 'flash'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   
@@ -30,7 +29,6 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [workType, setWorkType] = useState<'portfolio' | 'flash'>('portfolio');
   const [tattooStyle, setTattooStyle] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,7 +76,7 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
         artist_id: artistId,
         title,
         description,
-        work_type: workType,
+        work_type: 'portfolio',
         tattoo_style: tattooStyle,
         image_url: publicUrlData.publicUrl,
         is_published: true, // Default to published for artist
@@ -102,7 +100,6 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
     setUploadFile(null);
     setTitle("");
     setDescription("");
-    setWorkType("portfolio");
     setTattooStyle("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -141,32 +138,10 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
     }
   };
 
-  const filteredItems = items.filter(item => activeTab === 'all' || item.work_type === activeTab);
-
   return (
     <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="flex gap-2 p-1 bg-black/40 border border-border-dark rounded-md">
-          <button 
-            onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 text-sm uppercase tracking-widest transition-colors ${activeTab === 'all' ? 'bg-white/10 text-white font-bold' : 'text-text-secondary hover:text-white'}`}
-          >
-            ทั้งหมด (All)
-          </button>
-          <button 
-            onClick={() => setActiveTab('portfolio')}
-            className={`px-4 py-2 text-sm uppercase tracking-widest transition-colors ${activeTab === 'portfolio' ? 'bg-white/10 text-white font-bold' : 'text-text-secondary hover:text-white'}`}
-          >
-            ผลงาน (Portfolio)
-          </button>
-          <button 
-            onClick={() => setActiveTab('flash')}
-            className={`px-4 py-2 text-sm uppercase tracking-widest transition-colors ${activeTab === 'flash' ? 'bg-white/10 text-white font-bold' : 'text-text-secondary hover:text-white'}`}
-          >
-            ลายแฟลช (Flash)
-          </button>
-        </div>
-
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-gothic tracking-widest uppercase">ผลงานของคุณ</h2>
         <button 
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 bg-white text-black px-4 py-2 text-sm font-bold uppercase tracking-widest hover:bg-accent-silver transition-colors rounded-sm"
@@ -177,14 +152,14 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
 
       {isLoading ? (
         <div className="text-center py-20 text-text-secondary animate-pulse">กำลังโหลดผลงาน...</div>
-      ) : filteredItems.length === 0 ? (
+      ) : items.length === 0 ? (
         <div className="text-center py-20 border border-border-dark border-dashed bg-white/5 rounded-lg">
-          <p className="text-text-secondary mb-2">ยังไม่มีผลงานในหมวดหมู่นี้</p>
+          <p className="text-text-secondary mb-2">ยังไม่มีผลงานในระบบ</p>
           <button onClick={() => setIsModalOpen(true)} className="text-sm text-white underline">เพิ่มผลงานแรกของคุณ</button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredItems.map(item => (
+          {items.map(item => (
             <div key={item.id} className="raw-panel overflow-hidden group">
               <div className="relative aspect-square border-b border-border-dark overflow-hidden bg-black/50">
                 <img src={item.image_url} alt={item.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
@@ -209,9 +184,6 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
 
                 {/* Status Badges */}
                 <div className="absolute bottom-2 left-2 flex gap-2">
-                  <span className="text-[10px] uppercase tracking-widest px-2 py-1 bg-black/80 border border-border-dark backdrop-blur-md">
-                    {item.work_type}
-                  </span>
                   {!item.is_published && (
                     <span className="text-[10px] uppercase tracking-widest px-2 py-1 bg-red-500/80 text-white backdrop-blur-md">
                       ซ่อนอยู่ (Hidden)
@@ -270,15 +242,7 @@ export default function PortfolioManager({ artistId }: { artistId: string }) {
                   <input type="text" required className="input-raw w-full" value={title} onChange={e => setTitle(e.target.value)} />
                 </div>
                 
-                <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider text-text-secondary">ประเภท (Type)</label>
-                  <select className="input-raw w-full text-xs py-2" value={workType} onChange={e => setWorkType(e.target.value as any)}>
-                    <option value="portfolio">ผลงานที่สักไปแล้ว (Portfolio)</option>
-                    <option value="flash">ลายแฟลช (Flash Design)</option>
-                  </select>
-                </div>
-                
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-2">
                   <label className="block text-xs uppercase tracking-wider text-text-secondary">สไตล์ (Style)</label>
                   <input type="text" placeholder="เช่น Minimal, Blackwork" className="input-raw w-full" value={tattooStyle} onChange={e => setTattooStyle(e.target.value)} />
                 </div>

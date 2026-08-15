@@ -137,9 +137,6 @@ export default function AdminPortfolioManager() {
                 </div>
 
                 <div className="absolute bottom-2 left-2 flex gap-1 flex-col">
-                  <span className="text-[10px] uppercase tracking-widest px-2 py-1 bg-black/80 border border-border-dark backdrop-blur-md w-max">
-                    {item.work_type}
-                  </span>
                   {!item.is_published && (
                     <span className="text-[10px] uppercase tracking-widest px-2 py-1 bg-red-500/80 text-white backdrop-blur-md w-max">
                       Hidden

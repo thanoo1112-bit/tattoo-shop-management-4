@@ -4,8 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar, User, Menu, X } from "lucide-react";
-import PublicPortfolio from "@/components/public/PublicPortfolio";
+import PortfolioSection from "@/components/home/PortfolioSection";
 import PublicArtists from "@/components/public/PublicArtists";
+import BookingStepsSection from "@/components/home/BookingStepsSection";
+import HygieneStandardsSection from "@/components/home/HygieneStandardsSection";
+import FooterSection from "@/components/home/FooterSection";
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -83,7 +86,7 @@ export default function Home() {
           </div>
           
           <p className="text-sm md:text-base lg:text-lg text-text-secondary font-light max-w-2xl mx-auto leading-loose drop-shadow-md px-4 mb-10 md:mb-12">
-            เปลี่ยนจินตนาการให้เป็นศิลปะบนเรือนร่าง ถ่ายทอดตัวตนของคุณผ่านลายสักแบบ Custom Design <br className="hidden md:block"/> ในพื้นที่ Private Studio ของเรา
+            ศูนย์รวมงานสักหลากหลายสไตล์ รังสรรค์ผลงานศิลปะบนเรือนร่างระดับพรีเมียม <br className="hidden md:block"/> ในบรรยากาศสตูดิโอแบบ Exclusive
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 w-full max-w-md mx-auto sm:max-w-none px-4">
@@ -98,28 +101,19 @@ export default function Home() {
       </section>
 
       {/* Dynamic Portfolio & Flash Wall Section */}
-      <PublicPortfolio />
+      <PortfolioSection />
 
-      {/* Dynamic Artists Section */}
+      {/* Artists Section */}
       <PublicArtists />
 
-      {/* Aftercare Section Placeholder */}
-      <section id="aftercare" className="py-16 md:py-24 px-4 md:px-12 bg-transparent relative z-10">
-        <div className="max-w-7xl mx-auto text-center">
-          <h3 className="text-3xl md:text-4xl font-gothic mb-4 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">ดูแลรอยสัก (Aftercare)</h3>
-          <p className="text-text-secondary mb-12">คู่มือการดูแลรอยสักเพื่อให้สีสวยคมชัดและแผลหายไว</p>
-          <div className="raw-panel p-12 text-center text-text-secondary border-dashed max-w-3xl mx-auto">
-            <p className="font-gothic text-xl tracking-widest uppercase">Coming Soon</p>
-            <p className="text-sm mt-2">ส่วนนี้กำลังอยู่ระหว่างการพัฒนา</p>
-          </div>
-        </div>
-      </section>
+      {/* Booking Steps Section */}
+      <BookingStepsSection />
+
+      {/* Hygiene Standards Section */}
+      <HygieneStandardsSection />
       
-      {/* Footer */}
-      <footer className="py-8 md:py-12 border-t border-border-dark text-center text-xs md:text-sm text-text-secondary px-4">
-        <p className="tracking-widest uppercase font-gothic">© 2026 157 TATTOO. ALL RIGHTS RESERVED.</p>
-        <p className="mt-2 text-text-secondary/50">RAW UNDERGROUND STUDIO & ART GALLERY</p>
-      </footer>
+      {/* Footer Section */}
+      <FooterSection />
 
       {/* Mobile Nav Overlay (Moved outside header to fix z-index and fixed positioning) */}
       {isMobileMenuOpen && (
