@@ -45,7 +45,7 @@ export default function PortfolioSection() {
   }, []);
 
   return (
-    <section className="py-16 md:py-24 bg-transparent relative z-10 border-b border-border-dark overflow-hidden">
+    <section id="portfolio" className="py-16 md:py-24 bg-background-dark relative z-10 border-b border-border-dark overflow-hidden">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex justify-between items-end mb-10 md:mb-16">
@@ -117,7 +117,7 @@ export default function PortfolioSection() {
             <div className="mt-8 text-center md:hidden px-4">
               <Link 
                 href="/portfolio" 
-                className="inline-flex justify-center w-full items-center gap-2 bg-black text-white border border-border-dark px-6 py-4 rounded-md font-bold tracking-widest uppercase text-sm hover:bg-white/10 transition-colors shadow-lg"
+                className="inline-flex justify-center w-full items-center gap-2 bg-white text-black border border-white px-6 py-4 rounded-md font-bold tracking-widest uppercase text-sm hover:bg-gray-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.2)]"
               >
                 ดูผลงานทั้งหมด <ArrowRight size={18} />
               </Link>

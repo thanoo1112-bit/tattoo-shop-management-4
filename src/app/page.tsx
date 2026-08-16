@@ -15,7 +15,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col bg-flash-wall">
-      {/* Dark overlay for the whole page to make the flash wall faint */}
+      {/* Dark overlay for the whole page to make the background faint */}
       <div className="fixed inset-0 bg-background-dark/90 pointer-events-none z-[-1]"></div>
 
       {/* Navbar */}
@@ -28,10 +28,13 @@ export default function Home() {
         </Link>
         
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-6 text-sm font-medium text-text-secondary">
-          <Link href="#portfolio" className="hover:text-accent-silver transition-colors">ผลงาน (Portfolio)</Link>
-          <Link href="#artists" className="hover:text-accent-silver transition-colors">ช่างสัก (Artists)</Link>
-          <Link href="#aftercare" className="hover:text-accent-silver transition-colors">ดูแลรอยสัก (Aftercare)</Link>
+        <nav className="hidden md:flex gap-6 text-sm font-medium text-text-secondary uppercase tracking-wider">
+          <Link href="/" className="hover:text-accent-silver transition-colors">หน้าแรก</Link>
+          <Link href="#portfolio" className="hover:text-accent-silver transition-colors">ผลงาน</Link>
+          <Link href="#artists" className="hover:text-accent-silver transition-colors">ช่างสัก</Link>
+          <Link href="#booking-steps" className="hover:text-accent-silver transition-colors">ขั้นตอนการจอง</Link>
+          <Link href="#hygiene" className="hover:text-accent-silver transition-colors">มาตรฐานร้าน</Link>
+          <Link href="#contact" className="hover:text-accent-silver transition-colors">ข้อมูลติดต่อ</Link>
         </nav>
         
         <div className="hidden md:flex gap-4">
@@ -55,7 +58,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center text-center px-4 py-24 md:py-32 border-b border-border-dark bg-ink-smoke overflow-hidden min-h-[100svh]">
+      <section className="relative flex-1 flex flex-col items-center justify-center text-center px-4 py-24 md:py-32 border-b border-border-dark overflow-hidden min-h-[100svh]">
         
         {/* Dark overlay to make the content pop */}
         <div className="absolute inset-0 bg-background-dark/80"></div>
@@ -93,9 +96,14 @@ export default function Home() {
             <Link href="/booking" className="flex items-center justify-center gap-3 bg-white text-black px-8 py-4 text-sm md:text-base font-bold tracking-widest hover:bg-accent-silver transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 duration-300">
               <Calendar size={18} /> จองคิวสัก
             </Link>
-            <Link href="#portfolio" className="flex items-center justify-center gap-2 px-8 py-4 text-sm md:text-base font-medium tracking-widest border border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-white/50 transition-all text-white hover:scale-105 duration-300">
-              ดูผลงาน
-            </Link>
+            <a 
+              href="https://www.facebook.com/profile.php?id=61550501946125" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 px-8 py-4 text-sm md:text-base font-medium tracking-widest border border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:border-white/50 transition-all text-white hover:scale-105 duration-300"
+            >
+              ปรึกษางานสัก
+            </a>
           </div>
         </div>
       </section>
@@ -115,7 +123,7 @@ export default function Home() {
       {/* Footer Section */}
       <FooterSection />
 
-      {/* Mobile Nav Overlay (Moved outside header to fix z-index and fixed positioning) */}
+      {/* Mobile Nav Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-[#0a0a0a] z-[100] flex flex-col items-center justify-center gap-6 md:hidden px-4">
           
@@ -127,9 +135,12 @@ export default function Home() {
             <X size={28} />
           </button>
 
+          <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">หน้าแรก (Home)</Link>
           <Link href="#portfolio" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ผลงาน (Portfolio)</Link>
           <Link href="#artists" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ช่างสัก (Artists)</Link>
-          <Link href="#aftercare" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ดูแลรอยสัก (Aftercare)</Link>
+          <Link href="#booking-steps" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ขั้นตอนการจอง (Booking)</Link>
+          <Link href="#hygiene" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">มาตรฐานร้าน (Hygiene)</Link>
+          <Link href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-text-primary hover:text-accent-silver tracking-widest uppercase">ข้อมูลติดต่อ (Contact)</Link>
           <div className="flex flex-col gap-4 mt-6 items-center w-full max-w-xs">
             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-text-secondary hover:text-accent-silver flex items-center gap-2">
               <User size={18} /> ล็อกอิน

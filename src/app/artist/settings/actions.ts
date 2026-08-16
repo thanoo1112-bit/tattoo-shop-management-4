@@ -14,6 +14,7 @@ export async function updateArtistSettings(formData: FormData) {
   const bank_account_name = formData.get('bank_account_name') as string
   const bank_name = formData.get('bank_name') as string
   const qrCodeFile = formData.get('qr_code_file') as File | null
+  const profileImageFile = formData.get('profile_image_file') as File | null
 
   // Ensure this user actually owns this artist record
   const { data: artistCheck } = await supabase
@@ -26,31 +27,39 @@ export async function updateArtistSettings(formData: FormData) {
   if (!artistCheck) return { error: "Permission denied" }
 
   let qr_code_url = formData.get('existing_qr_url') as string
+  let profile_image_url = formData.get('existing_profile_url') as string
 
-  // If a new file is uploaded
+  // If a new QR code file is uploaded
   if (qrCodeFile && qrCodeFile.size > 0) {
     const fileExt = qrCodeFile.name.split('.').pop()
     const fileName = `${artistId}_${Date.now()}.${fileExt}`
     
-    // We'll reuse payment-slips bucket or a generic bucket for now
-    // In a real app, you might have an 'artist-qrcodes' bucket.
-    // Using payment-slips to avoid needing a new bucket setup.
     const { data: uploadData, error: uploadError } = await supabase
       .storage
       .from('payment-slips')
       .upload(`qrcodes/${fileName}`, qrCodeFile, { upsert: true })
       
-    if (uploadError) {
-      console.error("Upload error:", uploadError)
-      return { error: "Failed to upload QR Code" }
-    }
+    if (uploadError) return { error: "Failed to upload QR Code" }
 
-    const { data: publicUrlData } = supabase
-      .storage
-      .from('payment-slips')
-      .getPublicUrl(`qrcodes/${fileName}`)
-      
+    const { data: publicUrlData } = supabase.storage.from('payment-slips').getPublicUrl(`qrcodes/${fileName}`)
     qr_code_url = publicUrlData.publicUrl
+  }
+
+  // If a new profile image is uploaded
+  if (profileImageFile && profileImageFile.size > 0) {
+    const fileExt = profileImageFile.name.split('.').pop()
+    const fileName = `${artistId}_profile_${Date.now()}.${fileExt}`
+    
+    // Use portfolio-images bucket for profile pictures as it's public and meant for images
+    const { data: uploadData, error: uploadError } = await supabase
+      .storage
+      .from('portfolio-images')
+      .upload(`profiles/${fileName}`, profileImageFile, { upsert: true })
+      
+    if (uploadError) return { error: "Failed to upload Profile Image" }
+
+    const { data: publicUrlData } = supabase.storage.from('portfolio-images').getPublicUrl(`profiles/${fileName}`)
+    profile_image_url = publicUrlData.publicUrl
   }
 
   const { error } = await supabase
@@ -59,7 +68,8 @@ export async function updateArtistSettings(formData: FormData) {
       promptpay_number,
       bank_account_name,
       bank_name,
-      qr_code_url
+      qr_code_url,
+      profile_image_url
     })
     .eq('id', artistId)
 

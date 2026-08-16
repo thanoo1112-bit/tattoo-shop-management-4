@@ -56,16 +56,16 @@ export default function AdminSidebar({ role = "artist" }: { role?: string }) {
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="p-6 border-b border-border-dark flex items-center justify-between hidden md:flex">
-          <Link href="/admin/dashboard" className="flex flex-col items-center gap-3 w-full">
-            <img src="/images/logo.png" alt="157 Logo" className="h-16 w-auto mix-blend-screen opacity-90" />
-            <h1 className="text-xl font-gothic tracking-widest text-center mt-2 border-t border-border-dark pt-4 w-full">
+        <div className="p-6 border-b border-border-dark flex flex-col items-center justify-center relative">
+          <Link href="/admin/dashboard" className="flex flex-col items-center gap-3 w-full" onClick={() => setIsOpen(false)}>
+            <img src="/images/logo.png" alt="157 Logo" className="h-12 md:h-16 w-auto mix-blend-screen opacity-90" />
+            <h1 className="text-lg md:text-xl font-gothic tracking-widest text-center mt-2 border-t border-border-dark pt-4 w-full">
               {role === 'admin' ? 'ADMIN PANEL' : 'ARTIST PANEL'}
             </h1>
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto mt-16 md:mt-0">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;

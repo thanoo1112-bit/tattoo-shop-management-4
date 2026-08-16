@@ -6,7 +6,7 @@ import { FaInstagram, FaLine, FaFacebookF } from "react-icons/fa";
 
 export default function FooterSection() {
   return (
-    <footer className="bg-[#050505] pt-16 md:pt-24 border-t border-border-dark relative overflow-hidden z-10">
+    <footer id="contact" className="bg-[#050505] pt-16 md:pt-24 border-t border-border-dark relative overflow-hidden z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
           

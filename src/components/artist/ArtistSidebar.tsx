@@ -56,21 +56,16 @@ export default function ArtistSidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="p-6 border-b border-border-dark items-center justify-between hidden md:flex">
-          <Link href="/artist/dashboard" className="flex flex-col items-center gap-3 w-full">
-            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center border border-border-dark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="w-10 h-10 text-white">
-                <path d="M12 2L2 22h20L12 2z" />
-                <path d="M12 8l4 10H8l4-10z" stroke="currentColor" fill="rgba(255,255,255,0.1)" />
-              </svg>
-            </div>
-            <h1 className="text-xl font-gothic tracking-widest text-center mt-2 border-t border-border-dark pt-4 w-full">
+        <div className="p-6 border-b border-border-dark flex flex-col items-center justify-center relative">
+          <Link href="/artist/dashboard" className="flex flex-col items-center gap-3 w-full" onClick={() => setIsOpen(false)}>
+            <img src="/images/logo.png" alt="157 Logo" className="h-12 md:h-16 w-auto mix-blend-screen opacity-90" />
+            <h1 className="text-lg md:text-xl font-gothic tracking-widest text-center mt-2 border-t border-border-dark pt-4 w-full">
               ARTIST PANEL
             </h1>
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto mt-16 md:mt-0">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {NAV_LINKS.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Trash2, Eye, EyeOff } from "lucide-react";
+import { Trash2, Eye, EyeOff, Plus, UploadCloud, X } from "lucide-react";
 
 type PortfolioItem = {
   id: string;
@@ -27,6 +27,15 @@ export default function AdminPortfolioManager() {
   const [filterArtist, setFilterArtist] = useState("all");
   const [artistsList, setArtistsList] = useState<{id: string, name: string}[]>([]);
 
+  // Upload Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [title, setTitle] = useState("");
+  const [tattooStyle, setTattooStyle] = useState("");
+  const [selectedArtistId, setSelectedArtistId] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchItems();
     fetchArtists();
@@ -49,7 +58,56 @@ export default function AdminPortfolioManager() {
 
   const fetchArtists = async () => {
     const { data, error } = await supabase.from("artists").select("id, name");
-    if (data) setArtistsList(data);
+    if (data) {
+      setArtistsList(data);
+      if (data.length > 0) setSelectedArtistId(data[0].id);
+    }
+  };
+
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadFile) return alert("กรุณาเลือกไฟล์รูปภาพ (Please select an image)");
+    if (!selectedArtistId) return alert("กรุณาเลือกช่างสัก (Please select an artist)");
+
+    setIsUploading(true);
+    try {
+      // 1. Upload to Storage bucket
+      const fileExt = uploadFile.name.split('.').pop();
+      const fileName = `${selectedArtistId}/${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("portfolio-images")
+        .upload(fileName, uploadFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from("portfolio-images")
+        .getPublicUrl(fileName);
+
+      // 2. Insert into DB
+      const { error: dbError } = await supabase.from("portfolios").insert({
+        artist_id: selectedArtistId,
+        title,
+        work_type: 'portfolio',
+        tattoo_style: tattooStyle,
+        image_url: publicUrlData.publicUrl,
+        is_published: true,
+        is_available: true
+      });
+
+      if (dbError) throw dbError;
+
+      // Success
+      setIsModalOpen(false);
+      setUploadFile(null);
+      setTitle("");
+      setTattooStyle("");
+      fetchItems();
+    } catch (error: any) {
+      alert("เกิดข้อผิดพลาดในการอัปโหลด: " + error.message);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDelete = async (id: string, imageUrl: string) => {
@@ -89,16 +147,24 @@ export default function AdminPortfolioManager() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <select 
-          className="input-raw text-sm py-2 px-4"
-          value={filterArtist}
-          onChange={e => setFilterArtist(e.target.value)}
-        >
-          <option value="all">ดูผลงานช่างทุกคน (All Artists)</option>
-          {artistsList.map(a => (
-            <option key={a.id} value={a.id}>{a.name}</option>
-          ))}
-        </select>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <select 
+            className="input-raw text-sm py-2 px-4"
+            value={filterArtist}
+            onChange={e => setFilterArtist(e.target.value)}
+          >
+            <option value="all">ดูผลงานช่างทุกคน (All Artists)</option>
+            {artistsList.map(a => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-white text-black px-4 py-2 text-sm font-bold tracking-widest uppercase hover:bg-accent-silver transition-colors"
+          >
+            <Plus size={16} /> อัปโหลดผลงาน (Upload)
+          </button>
+        </div>
         
         <p className="text-text-secondary text-sm">
           รวม: {filteredItems.length} รายการ
@@ -151,6 +217,107 @@ export default function AdminPortfolioManager() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0f0f0f] border border-border-dark w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-4 border-b border-border-dark flex justify-between items-center bg-black/50">
+              <h3 className="font-gothic tracking-widest uppercase text-white">เพิ่มผลงาน (Add Portfolio)</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-text-secondary hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleUpload} className="p-6 space-y-4 overflow-y-auto">
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-text-secondary mb-1">เลือกช่างสัก (Artist)</label>
+                <select 
+                  className="input-raw w-full"
+                  value={selectedArtistId}
+                  onChange={e => setSelectedArtistId(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>-- เลือกช่าง --</option>
+                  {artistsList.map(a => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-text-secondary mb-1">รูปผลงาน (Image)</label>
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border border-border-dark border-dashed p-6 text-center hover:bg-white/5 cursor-pointer transition-colors"
+                >
+                  {uploadFile ? (
+                    <div className="space-y-2">
+                      <div className="w-full aspect-video bg-black/50 relative overflow-hidden flex items-center justify-center border border-border-dark">
+                        <img src={URL.createObjectURL(uploadFile)} alt="Preview" className="max-h-full max-w-full object-contain" />
+                      </div>
+                      <p className="text-xs text-text-secondary truncate">{uploadFile.name}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <UploadCloud className="mx-auto text-text-secondary mb-2" size={24} />
+                      <p className="text-sm font-bold uppercase tracking-widest text-white mb-1">อัปโหลดไฟล์</p>
+                      <p className="text-xs text-text-secondary">คลิกเพื่อเลือกไฟล์รูปภาพ</p>
+                    </>
+                  )}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={e => e.target.files && setUploadFile(e.target.files[0])}
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-text-secondary mb-1">ชื่อผลงาน (Title)</label>
+                <input 
+                  type="text" 
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  className="input-raw w-full"
+                  placeholder="เช่น Blackwork Dragon, Chicano Sleeve"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-text-secondary mb-1">สไตล์งาน (Style)</label>
+                <input 
+                  type="text" 
+                  value={tattooStyle}
+                  onChange={e => setTattooStyle(e.target.value)}
+                  className="input-raw w-full"
+                  placeholder="เช่น Blackwork, Minimal"
+                />
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3 border-t border-border-dark mt-4">
+                <button 
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-sm font-bold uppercase tracking-widest text-text-secondary hover:text-white"
+                >
+                  ยกเลิก
+                </button>
+                <button 
+                  type="submit"
+                  disabled={isUploading}
+                  className="bg-white text-black px-6 py-2 text-sm font-bold tracking-widest uppercase hover:bg-accent-silver transition-all disabled:opacity-50"
+                >
+                  {isUploading ? "Uploading..." : "บันทึก (Save)"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

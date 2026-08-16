@@ -2,20 +2,36 @@
 
 import { useState, useRef } from "react";
 import { updateArtistSettings } from "./actions";
-import { UploadCloud, CheckCircle, Wallet } from "lucide-react";
+import { UploadCloud, CheckCircle, Wallet, Image as ImageIcon } from "lucide-react";
 
 export default function SettingsForm({ artist }: { artist: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  // QR Code State
   const [qrFile, setQrFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(artist.qr_code_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Profile Image State
+  const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(artist.profile_image_url || null);
+  const profileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setQrFile(file);
       setPreviewUrl(URL.createObjectURL(file));
+      setIsSuccess(false);
+    }
+  };
+
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setProfileFile(file);
+      setProfilePreviewUrl(URL.createObjectURL(file));
       setIsSuccess(false);
     }
   };
@@ -28,6 +44,9 @@ export default function SettingsForm({ artist }: { artist: any }) {
     const formData = new FormData(e.currentTarget);
     if (qrFile) {
       formData.set('qr_code_file', qrFile);
+    }
+    if (profileFile) {
+      formData.set('profile_image_file', profileFile);
     }
 
     const result = await updateArtistSettings(formData);
@@ -44,7 +63,49 @@ export default function SettingsForm({ artist }: { artist: any }) {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       <input type="hidden" name="artist_id" value={artist.id} />
       <input type="hidden" name="existing_qr_url" value={artist.qr_code_url || ""} />
+      <input type="hidden" name="existing_profile_url" value={artist.profile_image_url || ""} />
       
+      {/* Profile Image Section */}
+      <div className="raw-panel p-6 sm:p-8 space-y-6 border border-border-dark mb-6">
+        <div className="flex items-center gap-3 border-b border-border-dark pb-4">
+          <ImageIcon className="text-text-secondary" size={24} />
+          <div>
+            <h2 className="text-lg font-gothic tracking-widest uppercase">รูปโปรไฟล์ (Profile Image)</h2>
+            <p className="text-xs text-text-secondary mt-1">รูปภาพที่จะไปแสดงในหน้าหลักของเว็บไซต์</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+          {/* Profile Preview */}
+          <div className="w-32 h-40 bg-black border border-border-dark flex items-center justify-center relative overflow-hidden shrink-0">
+            {profilePreviewUrl ? (
+              <img src={profilePreviewUrl} alt="Profile Preview" className="w-full h-full object-cover" />
+            ) : (
+              <div className="text-center p-4">
+                <p className="text-xs text-text-secondary uppercase tracking-widest">No Image</p>
+              </div>
+            )}
+          </div>
+
+          {/* Upload Area */}
+          <div 
+            onClick={() => profileInputRef.current?.click()}
+            className="flex-1 w-full border border-border-dark border-dashed p-6 text-center hover:bg-white/5 cursor-pointer transition-colors flex flex-col items-center justify-center min-h-[160px]"
+          >
+            <UploadCloud className="text-text-secondary mb-3" size={28} />
+            <p className="text-sm font-bold uppercase tracking-widest text-white mb-1">เปลี่ยนรูปโปรไฟล์</p>
+            <p className="text-xs text-text-secondary">ขนาดแนะนำ 3:4 (เช่น 600x800px)</p>
+            <input 
+              type="file" 
+              ref={profileInputRef} 
+              className="hidden" 
+              accept="image/*" 
+              onChange={handleProfileChange}
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="raw-panel p-6 sm:p-8 space-y-6 border border-border-dark">
         
         <div className="flex items-center gap-3 border-b border-border-dark pb-4">

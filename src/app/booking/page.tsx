@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft, UploadCloud, Info, CheckCircle, Wallet } from "lucide-react";
+import { ArrowLeft, UploadCloud, Info, CheckCircle, Wallet, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 export default function BookingPage() {
@@ -18,6 +18,8 @@ export default function BookingPage() {
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState("");
+  const [customStyle, setCustomStyle] = useState("");
   const [placement, setPlacement] = useState("");
   const [sizeW, setSizeW] = useState("");
   const [sizeH, setSizeH] = useState("");
@@ -44,7 +46,15 @@ export default function BookingPage() {
 
   const handleArtistSelect = (artistId: string) => {
     const artist = artists.find(a => a.id === artistId);
-    setSelectedArtist(artist);
+    if (artist) {
+      // Ensure styles is an array
+      const parsedStyles = Array.isArray(artist.styles) 
+        ? artist.styles 
+        : (artist.styles ? JSON.parse(artist.styles) : []);
+      setSelectedArtist({ ...artist, styles: parsedStyles });
+      setSelectedStyle("");
+      setCustomStyle("");
+    }
   };
 
   const uploadFile = async (file: File, bucket: string) => {
@@ -76,11 +86,14 @@ export default function BookingPage() {
       const slipUrl = await uploadFile(slipImage, "payment-slips");
 
       // 3. Insert Appointment
+      const finalStyle = selectedStyle === "OTHER" ? customStyle : selectedStyle;
+
       const { error } = await supabase.from("appointments").insert({
         artist_id: selectedArtist.id,
         guest_name: guestName,
         guest_phone: guestPhone,
         guest_email: guestEmail,
+        style: finalStyle,
         placement,
         size_cm: `${sizeW}x${sizeH}`,
         medical_info: medicalInfo,
@@ -162,13 +175,49 @@ export default function BookingPage() {
                       <input type="radio" name="artist" value={artist.id} onChange={() => handleArtistSelect(artist.id)} className="peer sr-only" required />
                       <div className="p-3 border border-border-dark text-center peer-checked:border-white peer-checked:bg-white/5 transition-all text-sm">
                         <span className="block font-bold">{artist.name}</span>
-                        <span className="text-[10px] text-text-secondary uppercase">{artist.style}</span>
                       </div>
                     </label>
                   ))}
-                  {artists.length === 0 && <div className="text-xs text-text-secondary p-3 border border-border-dark col-span-3 text-center">กำลังโหลดรายชื่อช่าง... (หากไม่มี ให้เช็กว่ารัน SQL หรือยัง)</div>}
+                  {artists.length === 0 && <div className="text-xs text-text-secondary p-3 border border-border-dark col-span-3 text-center">กำลังโหลดรายชื่อช่าง...</div>}
                 </div>
               </div>
+
+              {selectedArtist && (
+                <div className="space-y-3 pt-2 animate-fade-in">
+                  <label className="block text-xs uppercase tracking-wider text-text-secondary">เลือกสไตล์งานสัก (Select Style)</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {selectedArtist.styles?.map((style: string) => (
+                      <label key={style} className="cursor-pointer">
+                        <input type="radio" name="style" value={style} checked={selectedStyle === style} onChange={() => setSelectedStyle(style)} className="peer sr-only" required />
+                        <div className="p-3 border border-border-dark text-center peer-checked:border-white peer-checked:bg-white/5 transition-all text-xs uppercase tracking-widest">
+                          {style}
+                        </div>
+                      </label>
+                    ))}
+                    
+                    {/* ALWAYS SHOW "OTHER" OPTION */}
+                    <label className="cursor-pointer">
+                      <input type="radio" name="style" value="OTHER" checked={selectedStyle === "OTHER"} onChange={() => setSelectedStyle("OTHER")} className="peer sr-only" required />
+                      <div className="p-3 border border-border-dark text-center peer-checked:border-white peer-checked:bg-white/5 transition-all text-xs uppercase tracking-widest">
+                        OTHER / สไตล์อื่นๆ
+                      </div>
+                    </label>
+                  </div>
+
+                  {selectedStyle === "OTHER" && (
+                    <div className="mt-3 animate-fade-in">
+                      <input 
+                        type="text" 
+                        placeholder="โปรดระบุสไตล์ที่คุณต้องการ (Please specify)" 
+                        required 
+                        className="input-raw w-full" 
+                        value={customStyle} 
+                        onChange={e => setCustomStyle(e.target.value)} 
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div className="space-y-2">
@@ -192,10 +241,32 @@ export default function BookingPage() {
                   className="border border-border-dark border-dashed p-6 text-center hover:bg-white/5 cursor-pointer transition-colors"
                 >
                   <UploadCloud className="mx-auto text-text-secondary mb-2" size={24} />
-                  <p className="text-xs text-text-secondary">คลิกเพื่ออัปโหลด (สูงสุด 3 รูป)</p>
+                  <p className="text-xs text-text-secondary mb-3">คลิกเพื่ออัปโหลดรอยสักอ้างอิง</p>
+                  
                   {referenceImages.length > 0 && (
-                    <p className="text-xs text-white mt-2 font-bold">{referenceImages.length} รูปที่เลือกไว้</p>
+                    <div className="flex gap-2 justify-center flex-wrap mt-2">
+                      {referenceImages.map((file, idx) => (
+                        <div key={idx} className="w-16 h-16 border border-border-dark bg-black/50 overflow-hidden rounded-sm relative group">
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            alt={`Preview ${idx+1}`} 
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setReferenceImages(prev => prev.filter((_, i) => i !== idx));
+                            }}
+                            className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X size={16} className="text-white" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
+                  
                   <input 
                     type="file" 
                     ref={fileInputRef} 
@@ -204,7 +275,8 @@ export default function BookingPage() {
                     accept="image/*" 
                     onChange={e => {
                       if (e.target.files) {
-                        setReferenceImages(Array.from(e.target.files).slice(0, 3));
+                        const newFiles = Array.from(e.target.files);
+                        setReferenceImages(prev => [...prev, ...newFiles]);
                       }
                     }}
                   />
@@ -270,9 +342,20 @@ export default function BookingPage() {
                     onClick={() => slipInputRef.current?.click()}
                     className={`border p-4 text-center cursor-pointer transition-colors ${slipImage ? 'border-green-500/50 bg-green-500/5' : 'border-border-dark border-dashed hover:bg-white/5'}`}
                   >
-                    <p className={`text-xs ${slipImage ? 'text-green-400 font-bold' : 'text-text-secondary'}`}>
-                      {slipImage ? `อัปโหลดแล้ว: ${slipImage.name}` : 'คลิกเพื่ออัปโหลดสลิป'}
-                    </p>
+                    {!slipImage ? (
+                      <p className="text-xs text-text-secondary">คลิกเพื่ออัปโหลดสลิป</p>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-16 h-24 border border-green-500/50 overflow-hidden rounded-sm relative">
+                          <img 
+                            src={URL.createObjectURL(slipImage)} 
+                            alt="Slip Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <p className="text-[10px] text-green-400 font-bold truncate max-w-[200px]">{slipImage.name}</p>
+                      </div>
+                    )}
                     <input 
                       type="file" 
                       ref={slipInputRef} 

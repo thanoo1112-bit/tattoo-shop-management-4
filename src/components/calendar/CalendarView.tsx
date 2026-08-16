@@ -30,19 +30,19 @@ interface CalendarViewProps {
   month: number; // 1-12
 }
 
-// Fixed color palette for Artists (Admin mode)
+// Fixed color palette for Artists (Admin mode) - Dark Gothic Theme
 const ARTIST_COLORS = [
-  "bg-blue-500", "bg-purple-500", "bg-pink-500", "bg-indigo-500", "bg-cyan-500", "bg-orange-500"
+  "bg-slate-600", "bg-purple-900", "bg-rose-900", "bg-cyan-900", "bg-amber-800", "bg-stone-700"
 ];
 
 // Status colors (Artist mode)
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "pending": return "bg-yellow-500";
-    case "approved": return "bg-green-500";
-    case "completed": return "bg-purple-500";
-    case "rejected": return "bg-red-500";
-    default: return "bg-gray-500";
+    case "pending": return "bg-amber-600";
+    case "approved": return "bg-emerald-700";
+    case "completed": return "bg-zinc-500";
+    case "rejected": return "bg-red-900";
+    default: return "bg-gray-700";
   }
 };
 
@@ -240,9 +240,9 @@ export default function CalendarView({ mode, appointments, artists = [], year, m
           </div>
           <div className="md:border-l md:border-border-dark md:pl-3 flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t border-border-dark md:border-t-0 mt-1 md:mt-0">
             <span className="text-text-secondary">สถานะ:</span>
-            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500"></span><span className="text-[10px]">Pending</span></div>
-            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span><span className="text-[10px]">Approved</span></div>
-            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500"></span><span className="text-[10px]">Completed</span></div>
+            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-600"></span><span className="text-[10px]">รอตรวจ</span></div>
+            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-700"></span><span className="text-[10px]">อนุมัติแล้ว</span></div>
+            <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-zinc-500"></span><span className="text-[10px]">เสร็จสิ้น</span></div>
           </div>
         </div>
       )}
