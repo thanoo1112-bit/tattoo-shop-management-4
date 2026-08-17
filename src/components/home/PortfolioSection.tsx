@@ -117,7 +117,7 @@ export default function PortfolioSection() {
             <div className="mt-8 text-center md:hidden px-4">
               <Link 
                 href="/portfolio" 
-                className="inline-flex justify-center w-full items-center gap-2 bg-white text-black border border-white px-6 py-4 rounded-md font-bold tracking-widest uppercase text-sm hover:bg-gray-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                className="inline-flex justify-center w-full items-center gap-2 bg-white text-black border border-white px-6 py-4 rounded-md font-bold tracking-widest uppercase text-sm hover:bg-gray-200 transition-colors shadow-lg"
               >
                 ดูผลงานทั้งหมด <ArrowRight size={18} />
               </Link>

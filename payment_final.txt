@@ -1,0 +1,69 @@
+﻿                {/* Payment */}
+                <div className="space-y-6">
+                  {(() => {
+                    const paymentArtist = artists.find(a => a.name.includes("บอม")) || selectedArtist;
+                    return (
+                      <div className="bg-background-dark/80 border border-border-dark rounded-xl p-6 text-center space-y-4 shadow-lg">
+                        <div>
+                          <p className="text-sm font-bold uppercase tracking-widest text-green-400">มัดจำ 500 บาท</p>
+                          <p className="text-xs text-text-secondary mt-1">สแกน QR Code เพื่อล็อกคิว (Deposit)</p>
+                        </div>
+                        
+                        {paymentArtist?.qr_code_url ? (
+                          <div className="bg-white p-3 md:p-4 inline-block mx-auto rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-transform hover:scale-105 duration-300">
+                            <img src={paymentArtist.qr_code_url} alt="QR Code" className="w-48 h-48 sm:w-56 sm:h-56 object-contain" />
+                          </div>
+                        ) : (
+                          <div className="w-48 h-48 sm:w-56 sm:h-56 mx-auto bg-white/5 border border-white/10 flex flex-col items-center justify-center text-text-secondary rounded-xl">
+                            <span className="text-sm tracking-wider uppercase opacity-50">ไม่มี QR Code</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-sm font-bold uppercase tracking-wider text-white">แนบสลิปโอนเงิน *</label>
+                      {slipImage && (
+                        <button type="button" onClick={() => setSlipImage(null)} className="text-xs text-red-400 hover:text-red-300 transition-colors bg-red-400/10 px-3 py-1 rounded-full">
+                          ลบรูป (Remove)
+                        </button>
+                      )}
+                    </div>
+                    
+                    {slipImage ? (
+                      <div className="relative aspect-[3/4] w-full max-w-[200px] rounded-xl overflow-hidden border-2 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.2)] mx-auto md:mx-0">
+                        <img src={URL.createObjectURL(slipImage)} alt="Slip" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                        <div className="absolute bottom-4 left-0 w-full text-center flex items-center justify-center gap-2">
+                          <CheckCircle size={16} className="text-green-400" />
+                          <span className="text-sm font-bold text-green-400">อัปโหลดสำเร็จ</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div 
+                        onClick={() => slipInputRef.current?.click()}
+                        className="border-2 border-white/20 border-dashed p-10 text-center cursor-pointer hover:bg-white/5 hover:border-white/50 transition-all rounded-xl group bg-background-dark/40"
+                      >
+                        <UploadCloud className="mx-auto text-text-secondary group-hover:text-white transition-colors mb-3" size={36} />
+                        <p className="text-sm font-bold text-text-secondary group-hover:text-white transition-colors">
+                          คลิกเพื่ออัปโหลดสลิป
+                        </p>
+                      </div>
+                    )}
+
+                    <input 
+                      type="file" 
+                      ref={slipInputRef} 
+                      className="hidden" 
+                      accept="image/*" 
+                      onChange={e => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          setSlipImage(e.target.files[0]);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </div>

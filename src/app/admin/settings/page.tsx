@@ -11,8 +11,27 @@ export default async function SettingsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  // Fetch artist data
+  let artist = null;
+  let allArtists = [];
+
+  const { data: artistRecord } = await supabase
+    .from("artists")
+    .select("*")
+    .eq("profile_id", user.id)
+    .single();
+    
+  artist = artistRecord;
+
+  if (!artist) {
+    const { data: artistsData } = await supabase
+      .from("artists")
+      .select("*");
+    allArtists = artistsData || [];
+  }
+
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in max-w-2xl mx-auto w-full">
       <div>
         <h1 className="text-2xl md:text-3xl font-gothic tracking-widest uppercase">
           ตั้งค่า (Settings)
@@ -20,10 +39,12 @@ export default async function SettingsPage() {
         <p className="text-text-secondary text-sm mt-1">จัดการข้อมูลส่วนตัวและบัญชีรับเงินของคุณ</p>
       </div>
 
-      <div className="raw-panel p-6 border border-border-dark max-w-2xl text-center">
-        <p className="text-text-secondary">ผู้ดูแลระบบ (Admin) ไม่จำเป็นต้องตั้งค่า QR Code รับเงิน</p>
-        <p className="text-xs mt-2 opacity-50">สำหรับช่างสัก (Artist) เท่านั้น</p>
-      </div>
+      {artist ? (
+        <SettingsForm artist={artist} />
+      ) : (
+        <LinkProfile artists={allArtists} />
+      )}
     </div>
   );
 }
+

@@ -30,9 +30,16 @@ export default function AppointmentRow({ app }: { app: any }) {
           <div className="text-[10px] text-text-secondary font-normal">{app.guest_phone}</div>
         </td>
         <td className="p-4 text-xs text-text-secondary">{app.artists?.name || "Unknown"}</td>
-        <td className="p-4 text-xs max-w-[200px] truncate">
-          {app.details || "ไม่มีรายละเอียด"}
-          <div className="mt-2 flex gap-2">
+        <td className="p-4 text-xs max-w-[250px]">
+          <div className="truncate"><span className="text-text-secondary">Style:</span> {app.style || "-"}</div>
+          <div className="truncate"><span className="text-text-secondary">Place:</span> {app.placement || "-"}</div>
+          <div className="truncate">
+            <span className="text-text-secondary">Size:</span> กว้าง {app.size_w || (app.size_cm ? app.size_cm.split('x')[0] : "-")} x ยาว {app.size_h || (app.size_cm ? app.size_cm.split('x')[1] : "-")} ซม. {app.size_tier ? `[${app.size_tier}]` : ''}
+          </div>
+          {app.estimated_price_range && (
+            <div className="text-accent-silver font-bold mt-1">ราคาประเมิน: {app.estimated_price_range}</div>
+          )}
+          <div className="mt-2 flex gap-2 flex-wrap">
             {app.reference_image_url && (
               <button onClick={() => setShowImage(app.reference_image_url)} className="text-[10px] bg-white/10 px-2 py-1 hover:bg-white/20 transition-colors">
                 ดูแบบ (Ref)

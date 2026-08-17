@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Plus, X, Edit, Trash2, Save, User, UploadCloud } from "lucide-react";
+import { Plus, X, Edit, Trash2, Save, User } from "lucide-react";
 
 type Artist = {
   id: string;
   name: string;
+  specialty: string;
   styles: string[];
   bio: string;
-  profile_image_url?: string;
 };
 
 export default function AdminArtistsPage() {
@@ -22,10 +22,6 @@ export default function AdminArtistsPage() {
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
   const [newStyleInput, setNewStyleInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  
-  const [profileFile, setProfileFile] = useState<File | null>(null);
-  const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null);
-  const profileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchArtists();
@@ -35,11 +31,13 @@ export default function AdminArtistsPage() {
     setIsLoading(true);
     const { data, error } = await supabase.from("artists").select("*").order("created_at", { ascending: true });
     if (data) {
-      // Ensure styles is an array
-      const mapped = data.map(a => ({
-        ...a,
-        styles: Array.isArray(a.styles) ? a.styles : (a.styles ? JSON.parse(a.styles as string) : [])
-      }));
+      // Ensure styles is an array and filter out Admin (Bom)
+      const mapped = data
+        .filter(a => !a.name.includes("บอม"))
+        .map(a => ({
+          ...a,
+          styles: Array.isArray(a.styles) ? a.styles : (a.styles ? JSON.parse(a.styles as string) : [])
+        }));
       setArtists(mapped);
     }
     setIsLoading(false);
@@ -47,17 +45,7 @@ export default function AdminArtistsPage() {
 
   const handleEditClick = (artist: Artist) => {
     setEditingArtist({ ...artist });
-    setProfilePreviewUrl(artist.profile_image_url || null);
-    setProfileFile(null);
     setIsEditModalOpen(true);
-  };
-
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setProfileFile(file);
-      setProfilePreviewUrl(URL.createObjectURL(file));
-    }
   };
 
   const handleAddStyle = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -89,30 +77,13 @@ export default function AdminArtistsPage() {
     setIsSaving(true);
     
     try {
-      let finalProfileUrl = editingArtist.profile_image_url;
-
-      if (profileFile) {
-        const fileExt = profileFile.name.split('.').pop();
-        const fileName = `${editingArtist.id}_profile_${Date.now()}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase
-          .storage
-          .from('portfolio-images')
-          .upload(`profiles/${fileName}`, profileFile, { upsert: true });
-          
-        if (uploadError) throw new Error("Failed to upload Profile Image: " + uploadError.message);
-
-        const { data: publicUrlData } = supabase.storage.from('portfolio-images').getPublicUrl(`profiles/${fileName}`);
-        finalProfileUrl = publicUrlData.publicUrl;
-      }
-
       const { error } = await supabase
         .from("artists")
         .update({ 
           name: editingArtist.name,
+          specialty: editingArtist.specialty,
           styles: editingArtist.styles,
-          bio: editingArtist.bio,
-          profile_image_url: finalProfileUrl
+          bio: editingArtist.bio
         })
         .eq("id", editingArtist.id);
         
@@ -139,14 +110,11 @@ export default function AdminArtistsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {artists.map(artist => (
             <div key={artist.id} className="bg-background-dark/80 border border-border-dark rounded-lg p-6 flex flex-col items-center text-center hover:border-white/20 transition-all">
-              <div className="w-20 h-28 bg-white/5 rounded-sm flex items-center justify-center border border-border-dark mb-4 overflow-hidden">
-                {artist.profile_image_url ? (
-                  <img src={artist.profile_image_url} alt={artist.name} className="w-full h-full object-cover" />
-                ) : (
-                  <User size={32} className="text-white/50" />
-                )}
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-border-dark mb-4">
+                <User size={32} className="text-white/50" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-4">{artist.name}</h3>
+              <h3 className="text-lg font-bold text-white mb-1">{artist.name}</h3>
+              <p className="text-sm text-accent-silver mb-4">{artist.specialty || "No specialty"}</p>
               
               <div className="flex flex-wrap gap-2 justify-center mb-6">
                 {artist.styles && artist.styles.length > 0 ? (
@@ -183,43 +151,23 @@ export default function AdminArtistsPage() {
                 </button>
               </div>
               
-              <div className="p-6 space-y-6 overflow-y-auto">
-                
-                {/* Profile Image Upload */}
-                <div>
-                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-2">รูปโปรไฟล์ (Profile Image)</label>
-                  <div className="flex gap-4 items-start">
-                    <div className="w-24 h-32 bg-black border border-border-dark flex items-center justify-center relative overflow-hidden shrink-0">
-                      {profilePreviewUrl ? (
-                        <img src={profilePreviewUrl} alt="Profile" className="w-full h-full object-cover" />
-                      ) : (
-                        <User size={32} className="text-white/20" />
-                      )}
-                    </div>
-                    <div 
-                      onClick={() => profileInputRef.current?.click()}
-                      className="flex-1 border border-border-dark border-dashed p-4 text-center hover:bg-white/5 cursor-pointer transition-colors flex flex-col items-center justify-center min-h-[128px]"
-                    >
-                      <UploadCloud className="text-text-secondary mb-2" size={20} />
-                      <p className="text-xs font-bold uppercase text-white mb-1">อัปโหลดรูปใหม่</p>
-                      <p className="text-[10px] text-text-secondary">3:4 Ratio</p>
-                      <input 
-                        type="file" 
-                        ref={profileInputRef} 
-                        className="hidden" 
-                        accept="image/*" 
-                        onChange={handleProfileChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-
+              <div className="p-6 space-y-4 overflow-y-auto">
                 <div>
                   <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">ชื่อช่าง (Name)</label>
                   <input 
                     type="text" 
                     value={editingArtist.name}
                     onChange={e => setEditingArtist({...editingArtist, name: e.target.value})}
+                    className="w-full bg-black/50 border border-border-dark text-white px-3 py-2 focus:outline-none focus:border-accent-silver/50"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">ความถนัดหลัก (Specialty)</label>
+                  <input 
+                    type="text" 
+                    value={editingArtist.specialty || ""}
+                    onChange={e => setEditingArtist({...editingArtist, specialty: e.target.value})}
                     className="w-full bg-black/50 border border-border-dark text-white px-3 py-2 focus:outline-none focus:border-accent-silver/50"
                   />
                 </div>

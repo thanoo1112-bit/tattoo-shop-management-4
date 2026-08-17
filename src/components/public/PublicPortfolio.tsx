@@ -86,27 +86,6 @@ export default function PublicPortfolio() {
         <h3 className="text-3xl md:text-4xl font-gothic mb-8 text-center drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] uppercase">
           ผลงาน (PORTFOLIO)
         </h3>
-        
-        <div className="flex justify-center items-center gap-8 md:gap-16 mb-8 border-b border-border-dark/50">
-          <button 
-            onClick={() => setActiveTab('portfolio')}
-            className={`pb-4 px-2 text-xs md:text-sm uppercase tracking-[0.2em] transition-all duration-300 relative ${activeTab === 'portfolio' ? 'text-white font-bold' : 'text-text-secondary hover:text-white'}`}
-          >
-            Tattoos
-            {activeTab === 'portfolio' && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white animate-fade-in shadow-[0_0_10px_rgba(255,255,255,0.5)]"></span>
-            )}
-          </button>
-          <button 
-            onClick={() => setActiveTab('flash')}
-            className={`pb-4 px-2 text-xs md:text-sm uppercase tracking-[0.2em] transition-all duration-300 relative ${activeTab === 'flash' ? 'text-white font-bold' : 'text-text-secondary hover:text-white'}`}
-          >
-            Flash Designs
-            {activeTab === 'flash' && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white animate-fade-in shadow-[0_0_10px_rgba(255,255,255,0.5)]"></span>
-            )}
-          </button>
-        </div>
 
         {/* Filter Bar */}
         <div className="flex flex-col sm:flex-row justify-end items-center gap-4 mb-10 w-full max-w-7xl mx-auto">

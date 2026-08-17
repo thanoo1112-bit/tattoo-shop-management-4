@@ -13,8 +13,14 @@ export async function updateArtistSettings(formData: FormData) {
   const promptpay_number = formData.get('promptpay_number') as string
   const bank_account_name = formData.get('bank_account_name') as string
   const bank_name = formData.get('bank_name') as string
+  
+  const name = formData.get('name') as string
+  const specialty = formData.get('specialty') as string
+  const bio = formData.get('bio') as string
+  const stylesString = formData.get('styles') as string
+  const styles = stylesString ? JSON.parse(stylesString) : []
+  
   const qrCodeFile = formData.get('qr_code_file') as File | null
-  const profileImageFile = formData.get('profile_image_file') as File | null
 
   // Ensure this user actually owns this artist record
   const { data: artistCheck } = await supabase
@@ -29,7 +35,7 @@ export async function updateArtistSettings(formData: FormData) {
   let qr_code_url = formData.get('existing_qr_url') as string
   let profile_image_url = formData.get('existing_profile_url') as string
 
-  // If a new QR code file is uploaded
+  // If a new QR file is uploaded
   if (qrCodeFile && qrCodeFile.size > 0) {
     const fileExt = qrCodeFile.name.split('.').pop()
     const fileName = `${artistId}_${Date.now()}.${fileExt}`
@@ -41,16 +47,20 @@ export async function updateArtistSettings(formData: FormData) {
       
     if (uploadError) return { error: "Failed to upload QR Code" }
 
-    const { data: publicUrlData } = supabase.storage.from('payment-slips').getPublicUrl(`qrcodes/${fileName}`)
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('payment-slips')
+      .getPublicUrl(`qrcodes/${fileName}`)
+      
     qr_code_url = publicUrlData.publicUrl
   }
 
-  // If a new profile image is uploaded
+  // If a new Profile Image is uploaded
+  const profileImageFile = formData.get('profile_image_file') as File | null
   if (profileImageFile && profileImageFile.size > 0) {
     const fileExt = profileImageFile.name.split('.').pop()
     const fileName = `${artistId}_profile_${Date.now()}.${fileExt}`
     
-    // Use portfolio-images bucket for profile pictures as it's public and meant for images
     const { data: uploadData, error: uploadError } = await supabase
       .storage
       .from('portfolio-images')
@@ -58,13 +68,21 @@ export async function updateArtistSettings(formData: FormData) {
       
     if (uploadError) return { error: "Failed to upload Profile Image" }
 
-    const { data: publicUrlData } = supabase.storage.from('portfolio-images').getPublicUrl(`profiles/${fileName}`)
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('portfolio-images')
+      .getPublicUrl(`profiles/${fileName}`)
+      
     profile_image_url = publicUrlData.publicUrl
   }
 
   const { error } = await supabase
     .from('artists')
     .update({
+      name,
+      specialty,
+      bio,
+      styles,
       promptpay_number,
       bank_account_name,
       bank_name,

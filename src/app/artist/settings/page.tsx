@@ -31,7 +31,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in max-w-2xl mx-auto w-full">
       <div>
         <h1 className="text-2xl md:text-3xl font-gothic tracking-widest uppercase">
           ตั้งค่า (Settings)
@@ -47,3 +47,4 @@ export default async function SettingsPage() {
     </div>
   );
 }
+

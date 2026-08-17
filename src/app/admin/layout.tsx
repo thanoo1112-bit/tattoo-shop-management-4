@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminNotifier from "@/components/admin/AdminNotifier";
 import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
@@ -50,6 +51,7 @@ export default async function AdminLayout({
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-flash-wall text-text-primary relative">
+      <AdminNotifier />
       {/* Dark overlay for the whole page to make the background faint */}
       <div className="fixed inset-0 bg-background-dark/90 pointer-events-none z-0"></div>
 
